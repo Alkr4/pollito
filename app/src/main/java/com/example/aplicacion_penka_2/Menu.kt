@@ -4,9 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.appcompat.app.AppCompatActivity
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -21,17 +22,45 @@ class Menu : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
 
+        // Retrieve Data
+        val userId = intent.getStringExtra("USER_ID")
+        val userRole = intent.getStringExtra("USER_ROLE")
+        val deptId = intent.getStringExtra("DEPT_ID")
+
         tvClock = findViewById(R.id.tvClock)
+        val btnCrud = findViewById<Button>(R.id.btn_crud) // User Management
+        val btnSensores = findViewById<Button>(R.id.btn_sensores) // Barrier & History
+        val btnDev = findViewById<Button>(R.id.btn_desarrollador)
 
-        findViewById<Button>(R.id.btn_crud).setOnClickListener {
-            startActivity(Intent(this, Crud::class.java))
+        // This button logic assumes you might add a new button for Sensor Management
+        // or reuse the existing CRUD button for Admins only.
+
+        // Look for this part in your onCreate:
+        if (userRole == "administrador") {
+            btnCrud.visibility = View.VISIBLE
+            btnCrud.text = "Panel de Administración" // Update text if you want
+
+            btnCrud.setOnClickListener {
+                // CHANGE THIS LINE:
+                // Old: startActivity(Intent(this, Crud::class.java))
+
+                // New: Go to the new Dashboard
+                startActivity(Intent(this, AdminPanel::class.java))
+            }
+        } else {
+            btnCrud.visibility = View.GONE // Hide User CRUD for Operators
         }
 
-        findViewById<Button>(R.id.btn_sensores).setOnClickListener {
-            startActivity(Intent(this, Sensores::class.java))
+        // Everyone can access Barrier Control
+        btnSensores.text = "Control Acceso / Barrera"
+        btnSensores.setOnClickListener {
+            val intent = Intent(this, Sensores::class.java)
+            intent.putExtra("DEPT_ID", deptId)
+            intent.putExtra("USER_ID", userId)
+            startActivity(intent)
         }
 
-        findViewById<Button>(R.id.btn_desarrollador).setOnClickListener {
+        btnDev.setOnClickListener {
             startActivity(Intent(this, Desarrollador::class.java))
         }
         startClock()

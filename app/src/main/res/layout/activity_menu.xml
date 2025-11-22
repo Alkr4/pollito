@@ -2,62 +2,92 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:padding="24dp"
+    tools:context=".Menu">
 
+    <!-- Header / Avatar -->
     <ImageView
         android:id="@+id/imgAvatar"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_marginTop="32dp"
+        android:src="@mipmap/ic_launcher_round"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@mipmap/ic_launcher_round" />
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Bienvenido"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgAvatar" />
+
+    <!-- Digital Clock -->
     <TextView
         android:id="@+id/tvClock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:text="Cargando..."
+        android:layout_marginTop="8dp"
+        android:text="--:--"
+        android:textColor="#666666"
         android:textSize="18sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgAvatar" />
+        app:layout_constraintTop_toBottomOf="@+id/tvWelcome" />
 
+    <!--
+         BUTTON 1: ADMIN PANEL
+         This button takes the user to the "Scenario B" Dashboard.
+         It is hidden by default in Kotlin if the user is not an Admin.
+    -->
     <Button
         android:id="@+id/btn_crud"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:text="CRUD Usuarios"
+        android:layout_height="60dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#673AB7"
+        android:text="Panel de Administración"
+        app:icon="@android:drawable/ic_menu_manage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvClock" />
 
+    <!--
+         BUTTON 2: BARRIER CONTROL
+         Available to Everyone (Admins and Operators).
+    -->
     <Button
         android:id="@+id/btn_sensores"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Datos de Sensores"
-        app:layout_constraintTop_toBottomOf="@id/btn_crud"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#2196F3"
+        android:text="Control de Acceso (Barrera)"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_crud" />
 
+    <!--
+         BUTTON 3: DEVELOPER INFO
+    -->
     <Button
         android:id="@+id/btn_desarrollador"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Datos del Desarrollador"
-        app:layout_constraintTop_toBottomOf="@id/btn_sensores"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#607D8B"
+        android:text="Información del Desarrollador"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_sensores" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

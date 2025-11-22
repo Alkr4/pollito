@@ -1,161 +1,136 @@
 package com.example.aplicacion_penka_2
 
-import android.hardware.camera2.CameraAccessException
-import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.ImageView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import org.json.JSONException
+import org.json.JSONArray
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class Sensores : AppCompatActivity() {
 
-    private var luzEncendida = false
-    private var linternaEncendida = false
-
+    // UI Elements
     private lateinit var txtFechaHora: TextView
-    private lateinit var txtTemperatura: TextView
-    private lateinit var txtHumedad: TextView
-    private lateinit var iconTemperatura: ImageView
-    private lateinit var iconLuz: ImageView
-    private lateinit var iconLinterna: ImageView
+    private lateinit var btnAbrir: Button
+    private lateinit var btnCerrar: Button
+    private lateinit var listHistorial: ListView
 
+    // Data
+    private var historialList = ArrayList<String>()
+    private lateinit var adapter: ArrayAdapter<String>
     private lateinit var datos: RequestQueue
-    private val apiHandler = Handler(Looper.getMainLooper())
-    private lateinit var apiRunnable: Runnable
 
-    private lateinit var cameraManager: CameraManager
-    private var cameraId: String? = null
+    // Intent Data
+    private var userId: String? = ""
+    private var deptId: String? = ""
+
+    // Simple Clock Handler
+    private val clockHandler = Handler(Looper.getMainLooper())
+    private lateinit var clockRunnable: Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sensores)
 
-        txtFechaHora = findViewById(R.id.txtFechaHora)
-        txtTemperatura = findViewById(R.id.txtTemperatura)
-        txtHumedad = findViewById(R.id.txtHumedad)
-        iconTemperatura = findViewById(R.id.iconTemperatura)
-        iconLuz = findViewById(R.id.iconLuz)
-        iconLinterna = findViewById(R.id.iconLinterna)
+        // 1. Receive User Data
+        userId = intent.getStringExtra("USER_ID")
+        deptId = intent.getStringExtra("DEPT_ID")
 
+        // 2. Bind Views (Only the ones that exist in your new XML)
+        txtFechaHora = findViewById(R.id.txtFechaHora)
+        btnAbrir = findViewById(R.id.btnAbrirBarrera)
+        btnCerrar = findViewById(R.id.btnCerrarBarrera)
+        listHistorial = findViewById(R.id.listHistorial)
+
+        // 3. Setup List Adapter
+        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, historialList)
+        listHistorial.adapter = adapter
+
+        // 4. Setup Volley
         datos = Volley.newRequestQueue(this)
 
-        cameraManager = getSystemService(CAMERA_SERVICE) as CameraManager
-        try {
-            cameraId = cameraManager.cameraIdList[0]
-        } catch (e: Exception) {
-            e.printStackTrace()
-            iconLinterna.isEnabled = false
-        }
+        // 5. Button Listeners
+        btnAbrir.setOnClickListener { controllingBarrera("ABRIR") }
+        btnCerrar.setOnClickListener { controllingBarrera("CERRAR") }
 
-        iconTemperatura.setImageResource(R.drawable.ic_temp_moderada)
-
-        iconLinterna.setOnClickListener {
-            controlarLinterna()
-        }
-
-        iconLuz.setOnClickListener {
-            luzEncendida = !luzEncendida
-            iconLuz.setImageResource(
-                if (luzEncendida) R.drawable.ic_luz_on else R.drawable.ic_luz_off
-            )
-        }
-        iniciarConsultaAPI()
+        // 6. Start logic
+        startClock()
+        cargarHistorial()
     }
 
-    private fun controlarLinterna() {
-        if (cameraId == null) return
-        try {
-            linternaEncendida = !linternaEncendida
+    private fun controllingBarrera(accion: String) {
+        // Call your local PHP (Config.URL_BASE)
+        val url = "${Config.URL_BASE}control_barrera.php?accion=$accion&id_usuario=$userId"
 
-            cameraManager.setTorchMode(cameraId!!, linternaEncendida)
-
-            iconLinterna.setImageResource(
-                if (linternaEncendida) R.drawable.ic_linterna_on else R.drawable.ic_linterna_off
-            )
-
-            SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText("¡Hecho!")
-                .setContentText("Linterna ${if (linternaEncendida) "Encendida" else "Apagada"}")
-                .show()
-
-        } catch (e: CameraAccessException) {
-            e.printStackTrace()
-            SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
-                .setTitleText("Error")
-                .setContentText("No se pudo acceder a la linterna.")
-                .show()
-        }
-    }
-
-    private fun iniciarConsultaAPI() {
-        apiRunnable = Runnable {
-            consultarAPI()
-            apiHandler.postDelayed(apiRunnable, 2000)
-        }
-        apiHandler.post(apiRunnable)
-    }
-
-    private fun consultarAPI() {
-        val url = "https://www.pnk.cl/muestra_datos.php"
-
-        val request = JsonObjectRequest(Request.Method.GET, url, null,
+        val request = StringRequest(
+            Request.Method.GET, url,
             { response ->
-                try {
-                    val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-                    txtFechaHora.text = dateFormat.format(Date())
-
-                    val temperatura = response.getDouble("temperatura")
-                    val humedad = response.getDouble("humedad")
-
-                    txtTemperatura.text = "Temperatura\n${String.format("%.1f", temperatura)}°C"
-                    txtHumedad.text = "Humedad\n${String.format("%.1f", humedad)}%"
-
-                    if (temperatura > 20.0) {
-                        iconTemperatura.setImageResource(R.drawable.ic_temp_high)
-                    } else {
-                        iconTemperatura.setImageResource(R.drawable.ic_temp_low)
-                    }
-
-                } catch (e: JSONException) {
-                    txtFechaHora.text = "Error de JSON"
-                }
+                SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                    .setTitleText("Comando Enviado")
+                    .setContentText("Barrera: $accion")
+                    .show()
+                // Refresh history to see the new event
+                cargarHistorial()
             },
             { error ->
-                txtFechaHora.text = "Error de API"
+                SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+                    .setTitleText("Error de Conexión")
+                    .setContentText("No se pudo contactar al servidor")
+                    .show()
             }
         )
         datos.add(request)
     }
 
-    override fun onPause() {
-        super.onPause()
-        apiHandler.removeCallbacks(apiRunnable)
+    private fun cargarHistorial() {
+        val url = "${Config.URL_BASE}listar_eventos.php?id_departamento=$deptId"
 
+        val request = StringRequest(Request.Method.GET, url,
+            { response ->
+                try {
+                    historialList.clear()
+                    val json = JSONArray(response)
+                    for (i in 0 until json.length()) {
+                        val evento = json.getJSONObject(i)
 
-        if (linternaEncendida && cameraId != null) {
-            try {
-                cameraManager.setTorchMode(cameraId!!, false)
-            } catch (e: CameraAccessException) { }
-            linternaEncendida = false
-        }
+                        val fecha = evento.getString("fecha_hora")
+                        val tipo = evento.getString("tipo_uso") // APERTURA_MANUAL etc.
+                        val auth = evento.getString("autorizado")
+
+                        historialList.add("$fecha | $tipo | $auth")
+                    }
+                    adapter.notifyDataSetChanged()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            },
+            { error -> error.printStackTrace() }
+        )
+        datos.add(request)
     }
 
-    override fun onResume() {
-        super.onResume()
-        iniciarConsultaAPI()
+    private fun startClock() {
+        clockRunnable = Runnable {
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+            txtFechaHora.text = dateFormat.format(Date())
+            clockHandler.postDelayed(clockRunnable, 1000)
+        }
+        clockHandler.post(clockRunnable)
+    }
 
-        iconLinterna.setImageResource(R.drawable.ic_linterna_off)
-        linternaEncendida = false
+    override fun onDestroy() {
+        super.onDestroy()
+        clockHandler.removeCallbacks(clockRunnable)
     }
 }

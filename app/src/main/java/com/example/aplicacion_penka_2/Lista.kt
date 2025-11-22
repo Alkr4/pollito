@@ -72,7 +72,7 @@ class Lista : AppCompatActivity() {
         } else {
             val textoBusqueda = texto.lowercase()
             for (usuario in listaUsuariosCompleta) {
-                val partes = usuario.split("|")
+                val partes = usuario.split(" | ")
                 if (partes.size > 2) {
                     val nombreCompleto = "${partes[1]} ${partes[2]}".lowercase()
                     if (nombreCompleto.contains(textoBusqueda)) {
@@ -100,7 +100,7 @@ class Lista : AppCompatActivity() {
                     for (i in 0 until json.length()) {
                         val usuarios = json.getJSONObject(i)
                         val linea =
-                            "${usuarios.getString("id")}|${usuarios.getString("nombre")}|${usuarios.getString("apellido")}|${usuarios.getString("email")}|${usuarios.getString("telefono")}"
+                            "${usuarios.getString("id")} | ${usuarios.getString("nombre")} | ${usuarios.getString("apellido")} | ${usuarios.getString("email")} | ${usuarios.getString("telefono")}"
 
                         listaUsuariosCompleta.add(linea)
                     }

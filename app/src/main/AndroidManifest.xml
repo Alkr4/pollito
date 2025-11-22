@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -15,6 +19,18 @@
         android:theme="@style/Theme.Aplicacion_Penka_2"
         android:usesCleartextTraffic="true"
         tools:ignore="ExtraText">
+        <activity
+            android:name=".AdminDepartamentos"
+            android:exported="false" />
+        <activity
+            android:name=".GestionSensores"
+            android:exported="false" />
+        <activity
+            android:name=".AdminUsuarios"
+            android:exported="false" />
+        <activity
+            android:name=".AdminPanel"
+            android:exported="false" />
         <activity
             android:name=".Desarrollador"
             android:exported="false" />

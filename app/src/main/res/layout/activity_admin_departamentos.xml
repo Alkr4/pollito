@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    tools:context=".AdminDepartamentos">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="32dp"
+            android:text="Registrar Departamento"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etDeptNumero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Número (ej. 101)"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/etDeptTorre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Torre (ej. A)"
+            android:inputType="textCapCharacters" />
+
+        <EditText
+            android:id="@+id/etDeptPiso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Piso (ej. 1)"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/etDeptCondominio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Nombre Condominio"
+            android:inputType="text"
+            android:text="Condominio Penka" />
+
+        <Button
+            android:id="@+id/btnGuardarDepto"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="32dp"
+            android:text="Guardar Departamento"
+            android:backgroundTint="#2196F3"/>
+
+    </LinearLayout>
+</ScrollView>

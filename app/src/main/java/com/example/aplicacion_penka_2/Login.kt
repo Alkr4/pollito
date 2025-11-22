@@ -47,7 +47,6 @@ class Login : AppCompatActivity() {
             }
             consultarDatos(emailVal, passwordVal)
         }
-
         findViewById<TextView>(R.id.tv_register).setOnClickListener {
             startActivity(Intent(this, Ingreso::class.java))
         }
@@ -58,24 +57,36 @@ class Login : AppCompatActivity() {
     }
 
     private fun consultarDatos(email: String, password: String) {
-        val url = "http://18.211.13.143/apiconsultausu.php?email=$email&password=$password"
+        val url = "${Config.URL_BASE}apiconsultausu.php?email=$email&password=$password"
         val request = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
                 try {
-                    val estado = response.getString("estado")
-                    if (estado == "0") {
+                    val status = response.getString("status")
+                    if (status == "error") {
                         SweetAlertDialog(this@Login, SweetAlertDialog.ERROR_TYPE)
                             .setTitleText("Error")
-                            .setContentText("Las credenciales son erróneas")
+                            .setContentText(response.getString("message"))
                             .show()
                     } else {
+                        // Capture User Data
+                        val usuario = response.getJSONObject("usuario")
+                        val idUsuario = usuario.getString("id")
+                        val rol = usuario.getString("privilegios") // 'administrador' or 'operador'
+                        val idDepto = usuario.getString("id_departamento")
+
                         SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
                             .setTitleText("¡Éxito!")
-                            .setContentText("Bienvenido a penka app")
+                            .setContentText("Bienvenido a Penka App")
                             .setConfirmClickListener { sDialog ->
                                 sDialog.dismissWithAnimation()
-                                startActivity(Intent(this, Menu::class.java))
+                                val intent = Intent(this, Menu::class.java)
+                                // Pass data to Menu
+                                intent.putExtra("USER_ID", idUsuario)
+                                intent.putExtra("USER_ROLE", rol)
+                                intent.putExtra("DEPT_ID", idDepto)
+                                startActivity(intent)
+                                finish()
                             }
                             .show()
                     }
@@ -83,9 +94,7 @@ class Login : AppCompatActivity() {
                     e.printStackTrace()
                 }
             },
-            { error ->
-                error.printStackTrace()
-            }
+            { error -> error.printStackTrace() }
         )
         datos.add(request)
     }
