@@ -16,7 +16,7 @@ $estado_inicial = 'activo';
 $clave_plana = mysqli_real_escape_string($cont, $_GET['password']);
 $rut = mysqli_real_escape_string($cont, $_GET['rut']);
 $clave_hash = password_hash($clave_plana, PASSWORD_DEFAULT);
-
+$rol_usuario = ($row_dept['total'] == 0) ? 'administrador' : 'operador';
 $sql_check_email = "SELECT email FROM usuarios WHERE email = '$email'";
 $result_check = mysqli_query($cont, $sql_check_email);
 
@@ -25,7 +25,9 @@ if (mysqli_num_rows($result_check) > 0) {
     exit();
 }
 
-$sql_check_dept = "SELECT COUNT(*) as total FROM usuarios WHERE id_departamento = '$id_departamento'";
+$sql_check_dept = "SELECT COUNT(*) as total FROM usuarios 
+                   WHERE id_departamento = '$id_departamento' 
+                   AND privilegios='administrador'";
 $result_dept = mysqli_query($cont, $sql_check_dept);
 $row_dept = mysqli_fetch_assoc($result_dept);
 $rol_usuario = ($row_dept['total'] == 0) ? 'administrador' : 'operador';

@@ -7,14 +7,17 @@ if (!$cont) {
     exit();
 }
 
-$id_usuario_target = mysqli_real_escape_string($cont, $_GET['id_usuario']);
-$nuevo_estado = mysqli_real_escape_string($cont, $_GET['nuevo_estado']);
-
-$estados_validos = ['activo', 'inactivo', 'bloqueado'];
-if (!in_array($nuevo_estado, $estados_validos)) {
-    echo json_encode(['status' => 'error', 'message' => 'Estado no válido.']);
+$id_usuario_ejecutor = mysqli_real_escape_string($cont, $_GET['id_usuario_ejecutor']);
+$check = "SELECT privilegios FROM usuarios WHERE id='$id_usuario_ejecutor'";
+$res = mysqli_query($cont, $check);
+$usr = mysqli_fetch_assoc($res);
+if($usr['privilegios'] != 'administrador'){
+    echo json_encode(['status'=>'error', 'message'=>'Sin permisos de administrador']);
     exit();
 }
+
+$estados_validos = ['ACTIVO', 'INACTIVO', 'BLOQUEADO'];
+$nuevo_estado = strtoupper($nuevo_estado);
 
 $sql = "UPDATE usuarios SET estado = '$nuevo_estado' WHERE id = '$id_usuario_target'";
 

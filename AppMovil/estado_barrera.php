@@ -1,22 +1,25 @@
 <?php
-header('Content-Type: text/plain');
-
-// 1. Connect to DB
+header('Content-Type: application/json');
 $cont = mysqli_connect('localhost', 'chris', 'Admin123', 'AppMovil');
 
-// 2. Get the LAST command sent by the App (Manual Open or Close)
-// We filter only for "APERTURA_MANUAL" or "CIERRE_MANUAL"
-$sql = "SELECT tipo_uso FROM historial_sensores 
-        WHERE tipo_uso IN ('APERTURA_MANUAL', 'CIERRE_MANUAL') 
-        ORDER BY id DESC LIMIT 1";
+// Leer de la nueva tabla control_barrera
+$sql = "SELECT estado_actual, ultimo_comando, fecha_ultimo_cambio 
+        FROM control_barrera WHERE id=1";
 
 $result = mysqli_query($cont, $sql);
 
-if ($row = mysqli_fetch_assoc($result)) {
-    // This will print "APERTURA_MANUAL" or "CIERRE_MANUAL"
-    echo $row['tipo_uso']; 
+if($row = mysqli_fetch_assoc($result)){
+    echo json_encode([
+        'status' => 'success',
+        'estado' => $row['estado_actual'],
+        'ultimo_comando' => $row['ultimo_comando'],
+        'fecha' => $row['fecha_ultimo_cambio']
+    ]);
 } else {
-    echo "ESPERA";
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'No se pudo leer estado de barrera'
+    ]);
 }
 
 mysqli_close($cont);

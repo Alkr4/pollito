@@ -27,8 +27,14 @@ if (mysqli_num_rows($result) > 0) {
         // Success! Send the data your Kotlin expects
         $datosUsuario = [
             'id' => $row['id'],
-            'privilegios' => $row['privilegios'],      // 'administrador' or 'operador'
-            'id_departamento' => $row['id_departamento']
+            'nombre' => $row['nombre'],
+            'apellido' => $row['apellido'],
+            'email' => $row['email'],
+            'privilegios' => $row['privilegios'],
+            'estado' => $row['estado'],
+            'id_departamento' => $row['id_departamento'],
+            'telefono' => $row['telefono'],
+            'rut' => $row['rut']
         ];
         
         echo json_encode([
