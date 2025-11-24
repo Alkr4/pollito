@@ -20,10 +20,16 @@
         android:usesCleartextTraffic="true"
         tools:ignore="ExtraText">
         <activity
-            android:name=".AdminDepartamentos"
+            android:name=".GestionSensoresSimple"
             android:exported="false" />
         <activity
-            android:name=".GestionSensores"
+            android:name=".LlaveroDigital"
+            android:exported="false" />
+        <activity
+            android:name=".Estadisticas"
+            android:exported="false" />
+        <activity
+            android:name=".AdminDepartamentos"
             android:exported="false" />
         <activity
             android:name=".AdminUsuarios"

@@ -23,7 +23,7 @@ class AdminPanel : AppCompatActivity() {
         // Button 3: Assign Sensors
         findViewById<Button>(R.id.btnGestSensores).setOnClickListener {
             // Pass the User ID so we know who is doing the assigning
-            val intent = Intent(this, GestionSensores::class.java)
+            val intent = Intent(this, GestionSensoresSimple::class.java)
             intent.putExtra("USER_ID", getIntent().getStringExtra("USER_ID")) // Pass it along if needed
             startActivity(intent)
         }
