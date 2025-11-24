@@ -85,9 +85,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
+                    android:enabled="true"
                     android:hint="ID Departamento"
-                    android:inputType="number"
-                    android:enabled="false" />
+                    android:inputType="number" />
 
                 <Switch
                     android:id="@+id/switchEsAdmin"
